@@ -119,8 +119,10 @@ write the plan to Notion and send notifications; nothing is auto-published.)
 3. If warranted, it builds a replacement plan via `calendar-logic` (replace which reel, displaced →
    next slot, cascade — never delete) + a finalized concept, and writes the change to the calendar
    as **Status = Proposed** (+ Proposed Date). If a script is needed → **script-writer** drafts it.
-4. Orchestrator **notifies Parth** (e.g. Slack) with the rationale + a pointer to review in Notion.
-   Nothing is locked; proposals stay `Proposed` until Parth reviews. Parth can override.
+4. Orchestrator **always ends with a visible confirmation — never silent.** It notifies Parth
+   (e.g. Slack, or a Notion comment) with the outcome + a pointer to review in Notion — **including
+   when no reel is warranted** ("logged to the Progress Log as an idea; no calendar change"). Nothing
+   is locked; proposals stay `Proposed` until Parth reviews. Parth can override.
 
 **B) Saturday flow (Audit + Shoot + draft next week)**
 1. **social-media-manager** runs job (B): pull Windsor (`instagram_public`, `onekey_notes`), audit
