@@ -73,14 +73,31 @@ running history.
 - **Next week's pillars** — the proposed emphasis.
 - **The next-week 7-reel slate** — Day / Pillar / Concept / Status (ready to shoot Saturday).
 
-## 4. After you create them
+## 4. The triggers & notifications to wire up (when you build the routines)
 
-1. Copy each database/page URL (and ID).
-2. When you build the Claude Code **routines** (not in this session), paste those into the routine
-   config so the agents target the right Notion objects — starting with the **Content Calendar DB**
-   (convert the existing "1Key Content Calendar Plan" page into the database above).
-3. Connect the **Windsor.ai `instagram_public`** connector for the `onekey_notes` account, and the
-   **Slack** channel where approval messages should land.
+These map to the three orchestration flows in `CLAUDE.md`. **None are created in this scaffolding
+session** — this is your go-live checklist.
+
+- **OneKey webhook → per-note flow.** Point the OneKey note webhook at the routine so that when you
+  record an update mid-week and fire it, the agents receive the context. Rule baked into the system:
+  a note **before Friday** can change the imminent **Saturday batch**; **Friday onward** it targets
+  the week after.
+- **Saturday schedule → audit + shoot day.** A Saturday trigger runs the audit (Windsor) on the
+  currently-posting week, finalizes the about-to-film week, and — after you film — drafts the next
+  week as `Proposed`.
+- **Monday-morning schedule → review notification.** A Monday-morning trigger notifies you (via the
+  Slack channel) that **next week's calendar is ready to review in Notion.** You review there and
+  tell the agent any changes.
+
+## 5. Connections & bootstrap
+
+1. Copy each database/page URL (and ID) into the routine config — starting with the **Content
+   Calendar DB** (convert the existing **"1Key Content Calendar Plan"** page into the database in §1).
+2. Connect the **Windsor.ai `instagram_public`** connector for the `onekey_notes` account.
+3. Connect the **Slack** channel where review/priority notifications should land.
+4. **Bootstrap:** your calendar currently holds **one week** of reels — the batch you film **this
+   Saturday**. That week posts the following Mon–Sun. From the first Saturday onward the rolling cycle
+   takes over: each Saturday's run drafts the *next* week as `Proposed` for that Monday's review.
 
 > Reminder: creating routines, attaching triggers, and any live Notion/Slack/Windsor writes are
 > **out of scope for the scaffolding session** — this file is your manual checklist for when you're

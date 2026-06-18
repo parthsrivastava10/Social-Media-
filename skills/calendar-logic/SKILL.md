@@ -22,22 +22,27 @@ scheduling logic — pillar/strategy decisions come from `context/brand-strategy
 - **Default pillar mix per week: 2/2/2/1** — 2× 30 Founders, 2× Voice/POV, 2× Pain, 1× Product.
 - A slot is **UNFILMED** if `Filmed? = false` (Status not yet `Filmed`/`Posted`).
 
-## 2. The production rhythm these slots serve
+## 2. The production rhythm these slots serve (rolling weekly cycle)
 
-- **Film Saturday** (whole upcoming week at once) → **post Mon–Sun** → **Sunday** finalize +
-  approve the *next* week so it's ready to film the following Saturday.
-- So at any time there are typically two live weeks in view: the **current filmed week** (locked)
-  and the **next unfilmed week** (still editable).
+- **Saturday:** audit the currently-posting week → finalize the about-to-film week → **film all 7
+  reels** (locks the week) → draft the *following* week as `Proposed`.
+- **Mon–Sun:** post one reel/day (manual).
+- **Monday morning:** Parth is notified the **next week's calendar** is ready to **review in Notion**.
+- **Mid-week:** OneKey-webhook notes can update the next week (see the Friday cutoff in §3).
+- So at any time there are typically two weeks in view: the **current filmed week** (locked, posting)
+  and the **next unfilmed week** (the imminent Saturday batch — reviewed Monday, still editable).
 
-## 3. The FREEZE LINE (hard constraint)
+## 3. The FREEZE LINE + the Friday cutoff (timing constraints)
 
-- Once a week is **filmed** (Saturday), every slot in it is **locked**. Do not insert, replace,
-  reorder, or delete reels in a filmed week.
-- Any priority change — a new reel from a product update — targets the **soonest UNFILMED week**.
-  If the current week is already filmed, that means the *next* week (or the soonest week whose
-  Saturday film session hasn't happened).
-- **Determining the target week:** find the earliest week where `Filmed? = false` for its slots /
-  whose film date (the Saturday before its Mon) is still in the future. That is the insertion week.
+- **Freeze line:** once a week is **filmed** (Saturday), every slot in it is **locked**. Do not
+  insert, replace, reorder, or delete reels in a filmed week. Agents never set `Status = Filmed` —
+  only Parth's Saturday shoot does.
+- Any change targets the **soonest UNFILMED week**. **Determining the target week:** find the
+  earliest week where the slots are not yet `Filmed` / whose Saturday film session hasn't happened.
+- **Friday cutoff (practical):** the upcoming **Saturday batch** can still be changed by a note that
+  arrives **before Friday**. From **Friday onward**, that batch is effectively settled for filming —
+  route the change to the **week after** instead. (The freeze is the hard lock at Saturday; Friday is
+  the soft cutoff that protects the imminent shoot.)
 
 ## 4. Insert + bump + cascade algorithm
 
