@@ -5,7 +5,7 @@ description: >-
   whenever a reel must be inserted, moved, or reprioritized: 7 reels/week (Mon–Sun), insert a new
   reel at the soonest UNFILMED slot, push the displaced reel to the next open slot, cascade
   collisions forward, never delete, and respect the Saturday freeze line. Invoked by the
-  social-media-manager when building replacement plans or the Sunday slate.
+  social-media-manager when building replacement plans or the Saturday draft of next week's slate.
 ---
 
 # Calendar Logic — weekly slots, freeze line, bump & cascade
@@ -24,13 +24,16 @@ scheduling logic — pillar/strategy decisions come from `context/brand-strategy
 
 ## 2. The production rhythm these slots serve (rolling weekly cycle)
 
-- **Saturday:** audit the currently-posting week → finalize the about-to-film week → **film all 7
-  reels** (locks the week) → draft the *following* week as `Proposed`.
+- **Friday:** audit the currently-posting week (Windsor) → finalize the **about-to-shoot** week.
+- **Saturday:** **film all 7 reels** of the finalized week (locks the week) → draft the *following*
+  week as `Proposed`.
+- **Sunday:** Parth is notified the **next week's calendar** (drafted Saturday) is ready to **review
+  in Notion**.
 - **Mon–Sun:** post one reel/day (manual).
-- **Monday morning:** Parth is notified the **next week's calendar** is ready to **review in Notion**.
-- **Mid-week:** OneKey-webhook notes can update the next week (see the Friday cutoff in §3).
+- **Mid-week (any day):** OneKey-webhook notes can update the upcoming week (see the Friday cutoff in §3).
 - So at any time there are typically two weeks in view: the **current filmed week** (locked, posting)
-  and the **next unfilmed week** (the imminent Saturday batch — reviewed Monday, still editable).
+  and the **next unfilmed week** (the imminent Saturday batch — drafted last Saturday, reviewed
+  Sunday, finalized at Friday's audit, still editable until then).
 
 ## 3. The FREEZE LINE + the Friday cutoff (timing constraints)
 
@@ -40,8 +43,8 @@ scheduling logic — pillar/strategy decisions come from `context/brand-strategy
 - Any change targets the **soonest UNFILMED week**. **Determining the target week:** find the
   earliest week where the slots are not yet `Filmed` / whose Saturday film session hasn't happened.
 - **Friday cutoff (practical):** the upcoming **Saturday batch** can still be changed by a note that
-  arrives **before Friday**. From **Friday onward**, that batch is effectively settled for filming —
-  route the change to the **week after** instead. (The freeze is the hard lock at Saturday; Friday is
+  arrives **before Friday's audit**. From **Friday onward**, that batch is settled by the audit and
+  about to be filmed — route the change to the **week after** instead. (The freeze is the hard lock at Saturday; Friday is
   the soft cutoff that protects the imminent shoot.)
 
 ## 4. Insert + bump + cascade algorithm

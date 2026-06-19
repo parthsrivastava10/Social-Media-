@@ -48,7 +48,7 @@ those fields.
 **Views to add:** Calendar (by `Scheduled Date`) · Board (group by `Status`) · Table (group by `Week`).
 
 > This week posts Jun 22–28 and is filmed Sat Jun 20. From here the rolling cycle takes over: each
-> Saturday's run drafts the *next* week as `Proposed` for that Monday's review.
+> Saturday's run drafts the *next* week as `Proposed` for that Sunday's review.
 
 ## 2) OneKey Progress Log — database
 

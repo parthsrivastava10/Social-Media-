@@ -42,7 +42,7 @@ avg likes ≈ **90% of total follower count**, i.e. posts travel far beyond foll
 **Metrics that matter (in priority order):** reach / new accounts reached → saves & shares (quality
 signal) → follower growth (north star). ⚠️ The public connector **cannot** see reach, saves,
 impressions, profile visits, or link taps — **Parth must feed Instagram Insights weekly** for the
-Sunday audit to pick real winners.
+Friday audit to pick real winners.
 
 ## 3. Audience / ICP
 

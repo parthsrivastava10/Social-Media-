@@ -28,24 +28,30 @@ real business is won at first-note activation — product/activation content is 
 ## 3. Production rhythm + freeze line (NON-NEGOTIABLE — drives all cadence logic)
 
 The calendar runs as a rolling weekly cycle. At any moment, **"next week's calendar" = the batch
-Parth films this coming Saturday** (reviewed the Monday before, posted the following Mon–Sun).
+Parth films this coming Saturday** (drafted the Saturday before, reviewed that Sunday, audited the
+Friday before the shoot, posted the following Mon–Sun).
 
-- **Saturday — Shoot + Audit day.** First, run the Instagram audit (Windsor) on the currently-
-  posting week and apply any needed last-minute changes to the about-to-film week. Then Parth films
-  **all 7 reels** for that week in one session. **Filming locks the week (FREEZE LINE).** Right
-  after the shoot, the *following* week's 7-reel slate is drafted into Notion as `Proposed`.
+- **Saturday — Shoot + draft-next-week day.** Parth films **all 7 reels** for the about-to-post week
+  in one session — that week has already been finalized by Friday's audit. **Filming locks the week
+  (FREEZE LINE).** The **same Saturday**, the system **drafts the *following* week's 7-reel slate**
+  into Notion as `Proposed`. *(Example: on Sat Jun 20 Parth shoots the Jun 22–28 week and the system
+  drafts the Jun 29–Jul 5 week.)*
+- **Sunday — Review day.** Parth is notified that **next week's content calendar is ready to review
+  in Notion** (the draft made the day before). He reviews it there and tells us any changes; we apply
+  them (as `Proposed`). *(Example: Sun Jun 21 he reviews the Jun 29–Jul 5 draft.)*
 - **Post Monday → Sunday**, one reel per day (~8–11pm IST). Parth posts manually.
-- **Monday morning — Review.** Parth is notified that **next week's content calendar is ready to
-  review in Notion.** He reviews it there and tells us any changes; we apply them (as `Proposed`).
-- **Mid-week updates (via OneKey webhook).** When a major update lands, Parth records it as a note
-  in OneKey and fires the webhook; we receive the context. If it arrives **before Friday**, it may
-  change the upcoming **Saturday batch** (replace a reel or not); from **Friday onward** it is too
-  late for that batch and targets the week after.
+- **Mid-week updates (via OneKey webhook, any day).** When a major update lands, Parth records it as
+  a note in OneKey and fires the webhook; we receive the context and update the upcoming week **only
+  if the idea can replace an existing reel** (else it's logged as an idea).
+- **Friday — Instagram audit day.** Run the audit (Windsor) on the currently-posting week and apply
+  any needed changes to the about-to-shoot week, so Saturday's shoot list is finalized — part known
+  from Sunday's review, part driven by the audit. *(Example: Fri Jun 26 audit finalizes the Jun 29–
+  Jul 5 week before the Sat Jun 27 shoot.)*
 - **FREEZE LINE.** Once a week is filmed (Saturday) it is **locked** — never reprioritized. All
-  changes target the soonest **UNFILMED** week. **Friday is the practical cutoff** for the imminent
-  Saturday batch.
-- **The system's job:** always keep **7 ready-to-film reels** in the upcoming week — reviewed by
-  Monday, finalized at Saturday's audit, so Parth never runs out and never misses a day.
+  changes target the soonest **UNFILMED** week. **Friday's audit is the practical cutoff** for the
+  imminent Saturday batch; updates after it target the week after.
+- **The system's job:** always keep **7 ready-to-film reels** in the upcoming week — drafted Saturday,
+  reviewed Sunday, finalized at Friday's audit, so Parth never runs out and never misses a day.
 
 ## 4. The hard rule about incoming notes
 
@@ -93,10 +99,10 @@ Three subagents, each with a narrow job and scoped tools:
   appends it to the Progress Log. Writes the Progress Log ONLY; never the calendar.
 - **social-media-manager** (Notion + Windsor + Read) — (A) per-note: decides if an update warrants
   a priority reel and builds a replacement plan via the `calendar-logic` skill, targeting the
-  soonest unfilmed week (respecting the Friday cutoff for the imminent Saturday batch); (B) Saturday:
-  audits the currently-posting week via Windsor, finalizes the about-to-film week, and drafts the
-  following week's 7 reels. Writes changes as `Proposed` for Parth to review in Notion — never marks
-  a reel `Filmed` and never touches a frozen week.
+  soonest unfilmed week (respecting the Friday-audit cutoff for the imminent Saturday batch);
+  (B1) **Friday:** audits the currently-posting week via Windsor and finalizes the about-to-shoot
+  week; (B2) **Saturday:** drafts the following week's 7 reels. Writes changes as `Proposed` for
+  Parth to review in Notion — never marks a reel `Filmed` and never touches a frozen week.
 - **script-writer** (Read-only) — turns a finalized concept into script + caption + hashtags in
   our voice. Draft only.
 
@@ -107,15 +113,16 @@ cascade collisions forward, **never delete**, and respect the Saturday freeze li
 ## 9. Orchestration rules (CRITICAL: subagents cannot talk to each other)
 
 The **routine orchestrator carries the baton** between subagents and is the only thing that moves
-state. Three triggers. (Note: posting to Instagram is always manual — Parth does it. Agents only
+state. **Four triggers.** (Note: posting to Instagram is always manual — Parth does it. Agents only
 write the plan to Notion and send notifications; nothing is auto-published.)
 
 **A) Per-note flow (triggered by the OneKey webhook, any time)**
 1. Note arrives → **context-manager** distills it → appends to the Progress Log, returns
    current-state summary + this-week's-progress.
 2. **social-media-manager** reads the Content Calendar + the progress summary and decides if the
-   update warrants a priority reel, targeting the **soonest UNFILMED week**. **Cutoff:** before
-   Friday it may change the imminent Saturday batch; from Friday on → the week after.
+   update warrants a priority reel, targeting the **soonest UNFILMED week** — only if the idea can
+   **replace an existing reel**. **Cutoff:** before Friday's audit it may change the imminent
+   Saturday batch; from Friday on → the week after.
 3. If warranted, it builds a replacement plan via `calendar-logic` (replace which reel, displaced →
    next slot, cascade — never delete) + a finalized concept, and writes the change to the calendar
    as **Status = Proposed** (+ Proposed Date). If a script is needed → **script-writer** drafts it.
@@ -124,20 +131,24 @@ write the plan to Notion and send notifications; nothing is auto-published.)
    when no reel is warranted** ("logged to the Progress Log as an idea; no calendar change"). Nothing
    is locked; proposals stay `Proposed` until Parth reviews. Parth can override.
 
-**B) Saturday flow (Audit + Shoot + draft next week)**
-1. **social-media-manager** runs job (B): pull Windsor (`instagram_public`, `onekey_notes`), audit
-   the **currently-posting** week's performance, apply any needed last-minute changes to the
-   about-to-film week, and write findings to the **Weekly Audit** page.
-2. Orchestrator hands Parth the final **go-to-shoot list** (7 reels: scripts/captions/hashtags).
-3. Parth films all 7 → reels marked **`Filmed`** (FREEZE — the week is now locked).
-4. **social-media-manager** then drafts the **following** week's 7-reel slate into Notion as
-   `Proposed` (default 2/2/2/1 mix); **script-writer** drafts any not-yet-scripted reels.
+**B) Friday flow (Instagram audit → finalize the about-to-shoot week)**
+1. **social-media-manager** runs job (B1): pull Windsor (`instagram_public`, `onekey_notes`), audit
+   the **currently-posting** week's performance, apply any audit-driven changes to the
+   **about-to-shoot** week (the one Parth films tomorrow), and write findings to the **Weekly Audit** page.
+2. **script-writer** drafts any not-yet-scripted reels in that week.
+3. Orchestrator hands Parth the finalized **go-to-shoot list** (7 reels: scripts/captions/hashtags)
+   for tomorrow's shoot.
 
-**C) Monday-morning review notification**
+**C) Saturday flow (Shoot + draft next week)**
+1. Parth films all 7 of the finalized week → reels marked **`Filmed`** (FREEZE — the week is now locked).
+2. **social-media-manager** runs job (B2): drafts the **following** week's 7-reel slate into Notion as
+   `Proposed` (default 2/2/2/1 mix); **script-writer** drafts the new concepts. This is what Parth
+   reviews on Sunday.
+
+**D) Sunday review notification**
 - Orchestrator **notifies Parth** that **next week's content calendar is ready to review in
-  Notion** (the draft created at Saturday's shoot). Parth reviews; any changes he requests are
-  applied as `Proposed`. The week is then refined by mid-week notes and finalized at Saturday's
-  audit before filming.
+  Notion** (the draft created Saturday). Parth reviews; any changes he requests are applied as
+  `Proposed`. The week is then refined by mid-week notes and finalized at **Friday's** audit before filming.
 
 ---
 

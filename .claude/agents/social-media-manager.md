@@ -4,10 +4,10 @@ description: >-
   Owns the Content Calendar strategy. TWO jobs. (A) Per-note priority: decide whether an update
   warrants a priority reel, find the soonest UNFILMED week (respecting the Saturday freeze and the
   Friday cutoff for the imminent batch), and build a replacement plan via the calendar-logic skill
-  plus a finalized concept, written to Notion as Proposed. (B) Saturday job: pull Windsor.ai, audit
-  the currently-posting week, finalize the about-to-film week, write the Weekly Audit page, then
-  draft the following week's 7 reels. Targets the soonest unfilmed week; never moves filmed weeks;
-  never marks a reel Filmed.
+  plus a finalized concept, written to Notion as Proposed. (B1) Friday audit: pull Windsor.ai, audit
+  the currently-posting week, finalize the about-to-shoot week, write the Weekly Audit page. (B2)
+  Saturday draft: draft the following week's 7 reels as Proposed. Targets the soonest unfilmed week;
+  never moves filmed weeks; never marks a reel Filmed.
 tools: Read, mcp__Notion__notion-fetch, mcp__Notion__notion-search, mcp__Notion__notion-create-pages, mcp__Notion__notion-update-page, mcp__Windsor_ai__get_connectors, mcp__Windsor_ai__get_fields, mcp__Windsor_ai__get_data
 ---
 
@@ -63,32 +63,38 @@ Triggered when the context-manager hands you a distilled update + current-state 
 4. Hand the orchestrator the plan + concept (and flag if a script is needed). The orchestrator
    notifies Parth with the rationale + a pointer to review in Notion. Parth can override.
 
-## JOB B — Saturday job (audit + finalize the film-week + draft next week)
+## JOB B1 — Friday audit (finalize the about-to-shoot week)
 
-Triggered on the Saturday run, before Parth films.
+Triggered on the **Friday** run, the day before Parth films.
 
 1. **Pull Windsor.ai** (`instagram_public`, `onekey_notes`) for the latest available metrics. Note:
    the public connector cannot see reach, saves, impressions, profile visits, or link taps — if Parth
    has supplied Instagram Insights, fold those in; otherwise audit on what's available and flag the gap.
 2. **Audit what's working / not** on the **currently-posting week** vs prior weeks — which
    pillars/formats/hooks traveled, follow-conversion signal, cadence adherence.
-3. **Finalize the about-to-film week:** apply any audit-driven last-minute changes so all **7 slots**
-   hold **finalized concepts ready to shoot today** (default mix 2/2/2/1; rebalance with reasons if
-   needed). This is the last change before the freeze.
-4. **Write findings to the Weekly Audit page** in Notion (working/not, metrics pulled, next-week
-   pillars, the finalized 7-reel slate).
-5. Hand the orchestrator the **audit summary + the go-to-shoot list** for today's filming.
-6. **After filming locks the week, draft the FOLLOWING week's 7-reel slate** into the Content
-   Calendar as `Status = Proposed` (default 2/2/2/1) so it is ready for Parth's **Monday-morning
-   review**. Flag which reels still need scripts (the script-writer drafts those).
+3. **Finalize the about-to-shoot week** (the one Parth films tomorrow): apply any audit-driven changes
+   so all **7 slots** hold **finalized concepts ready to shoot** (default mix 2/2/2/1; rebalance with
+   reasons if needed). This is the last change before Saturday's freeze.
+4. **Write findings to the Weekly Audit page** in Notion (working/not, metrics pulled, the finalized
+   7-reel slate).
+5. Hand the orchestrator the **audit summary + the finalized go-to-shoot list** for tomorrow's shoot.
+
+## JOB B2 — Saturday draft (next week's slate)
+
+Triggered on the **Saturday** run (after/around Parth's shoot).
+
+1. **Draft the FOLLOWING week's 7-reel slate** into the Content Calendar as `Status = Proposed`
+   (default mix 2/2/2/1) so it is ready for Parth's **Sunday review**. Flag which reels still need
+   scripts (the script-writer drafts those). Never touch the week Parth just filmed (frozen).
 
 ## Output format
 
 - **Job A:** a labeled **Replacement Plan** (before → after slots, with dates and Status=Proposed) +
   a **Reel Concept** block. Note that the change was written to Notion as Proposed for review.
-- **Job B:** an **Audit Summary** + the finalized **Go-to-Shoot List** for today, plus the drafted
-  **Next-Week 7-Reel Slate** table (Day, Date, Pillar, Concept, Status). Confirm the Weekly Audit
-  page was written.
+- **Job B1 (Friday):** an **Audit Summary** + the finalized **Go-to-Shoot List** for tomorrow.
+  Confirm the Weekly Audit page was written.
+- **Job B2 (Saturday):** the drafted **Next-Week 7-Reel Slate** table (Day, Date, Pillar, Concept,
+  Status) written as Proposed.
 
 If you recommend any paid action (e.g. boosting a proven reel), describe it as a recommendation for
 Parth — do not assume budget is deployed.

@@ -64,7 +64,7 @@ running history.
 ## 3. Weekly Audit — page
 
 **Type:** Notion page (or a database of weekly entries if you prefer history). Written by the
-**social-media-manager** during the **Sunday** job. Each weekly audit should capture:
+**social-media-manager** during the **Friday** audit. Each weekly audit should capture:
 
 - **What's working / not working vs last week** — pillars/formats/hooks that traveled,
   follow-conversion signal, cadence adherence.
@@ -75,19 +75,21 @@ running history.
 
 ## 4. The triggers & notifications to wire up (when you build the routines)
 
-These map to the three orchestration flows in `CLAUDE.md`. **None are created in this scaffolding
+These map to the four orchestration flows in `CLAUDE.md`. **None are created in this scaffolding
 session** — this is your go-live checklist.
 
 - **OneKey webhook → per-note flow.** Point the OneKey note webhook at the routine so that when you
   record an update mid-week and fire it, the agents receive the context. Rule baked into the system:
-  a note **before Friday** can change the imminent **Saturday batch**; **Friday onward** it targets
-  the week after.
-- **Saturday schedule → audit + shoot day.** A Saturday trigger runs the audit (Windsor) on the
-  currently-posting week, finalizes the about-to-film week, and — after you film — drafts the next
-  week as `Proposed`.
-- **Monday-morning schedule → review notification.** A Monday-morning trigger notifies you (via the
-  Slack channel) that **next week's calendar is ready to review in Notion.** You review there and
-  tell the agent any changes.
+  a note **before Friday's audit** can change the imminent **Saturday batch**; **Friday onward** it
+  targets the week after.
+- **Friday schedule → Instagram audit.** A Friday trigger runs the audit (Windsor) on the
+  currently-posting week and finalizes the **about-to-shoot** week, then hands you the finalized
+  go-to-shoot list for tomorrow.
+- **Saturday schedule → draft next week.** A Saturday trigger drafts the *following* week's 7-reel
+  slate as `Proposed` (ready for Sunday's review). You film the finalized week the same day.
+- **Sunday schedule → review notification.** A Sunday trigger notifies you (via the Slack channel)
+  that **next week's calendar is ready to review in Notion.** You review there and tell the agent
+  any changes.
 
 ## 5. Connections & bootstrap
 
@@ -96,8 +98,9 @@ session** — this is your go-live checklist.
 2. Connect the **Windsor.ai `instagram_public`** connector for the `onekey_notes` account.
 3. Connect the **Slack** channel where review/priority notifications should land.
 4. **Bootstrap:** your calendar currently holds **one week** of reels — the batch you film **this
-   Saturday**. That week posts the following Mon–Sun. From the first Saturday onward the rolling cycle
-   takes over: each Saturday's run drafts the *next* week as `Proposed` for that Monday's review.
+   Saturday (Jun 20)**, posting Mon–Sun (Jun 22–28). From that Saturday the rolling cycle takes over:
+   each Saturday's run drafts the *next* week as `Proposed` (e.g. Jun 20 drafts the Jun 29–Jul 5 week)
+   for **Sunday's** review, which is then finalized at **Friday's** audit before the next shoot.
 
 > Reminder: creating routines, attaching triggers, and any live Notion/Slack/Windsor writes are
 > **out of scope for the scaffolding session** — this file is your manual checklist for when you're

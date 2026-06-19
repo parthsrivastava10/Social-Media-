@@ -1,13 +1,14 @@
 # ROUTINES.md — Go-live reference for the OneKey content routines
 
-> A blueprint for the Claude Code routines that will run this system. **Nothing here is active** —
-> this is the wiring diagram you follow when you're ready to attach triggers. The *behavior* of each
-> routine already lives in the repo (`CLAUDE.md`, the agents, the `calendar-logic` skill); a routine
-> is just a **trigger + an orchestrator prompt** that calls the subagents in order and carries the
-> baton between them (subagents cannot talk to each other).
+> The wiring diagram for the four Claude Code routines that run this system. The Notion backbone is
+> already built; **what's left is creating the four routines below.** The *behavior* of each routine
+> lives in the repo (`CLAUDE.md`, the agents, the `calendar-logic` skill); a routine is just a
+> **trigger + an orchestrator prompt** that calls the subagents in order and carries the baton
+> between them (subagents cannot talk to each other).
 >
-> **Prerequisite:** complete `SETUP.md` first (Content Calendar DB, Progress Log DB, Weekly Audit
-> page, Windsor connector, Slack channel).
+> **The weekly cadence (read this first):** **Friday** = Instagram audit finalizes the about-to-shoot
+> week · **Saturday** = Parth films it (freeze) + the system drafts next week · **Sunday** = review
+> notification · **Mon–Sun** = posting · **webhook** = mid-week ideas, any day.
 
 ---
 
@@ -53,8 +54,8 @@ note content.** If you genuinely can't find note text, send a Slack/Notion messa
 2. Call **social-media-manager** (Job A) with the calendar (`CONTENT_CALENDAR_DB` under page
    `3832ece2-05ae-81b1-...`) + that summary → it decides if a priority reel is warranted and, if so,
    builds a `calendar-logic` replacement plan targeting the soonest UNFILMED week. **Cutoff:** note
-   before Friday → may hit the imminent Saturday batch; Friday onward → the week after. It writes the
-   change as **`Proposed`**.
+   before **Friday's audit** → may hit the imminent Saturday batch; Friday onward → the week after.
+   It writes the change as **`Proposed`**.
 3. If a reel is warranted → call **script-writer** with the concept → returns script + caption + hashtags.
 4. **Always end with a visible confirmation — never silent.** Post to `SLACK_CHANNEL` (or, if Slack
    isn't connected, add a comment on the new Progress Log row): the outcome + a link to review in Notion.
@@ -79,8 +80,8 @@ Then run the per-note flow (ROUTINES.md Routine 1):
    (id 81ed46f8-e740-4647-ab5f-b984bd4602d3). Return current-state + this-week's-progress.
 2) social-media-manager (Job A): using the Content Calendar database that is a child of the page
    "1Key Content Calendar Plan" (id 3832ece2-05ae-81b1-b705-fc8d5f2be1e3), decide if this warrants a
-   priority reel for the soonest UNFILMED week (before Friday may change this Saturday's batch; Friday
-   onward → the week after). If warranted, write the calendar-logic replacement plan as Status=Proposed
+   priority reel for the soonest UNFILMED week (before Friday's audit may change this Saturday's batch;
+   Friday onward → the week after). If warranted, write the calendar-logic replacement plan as Status=Proposed
    (never delete, never touch a Filmed week, never set Filmed). If not warranted, make no calendar change.
 3) If warranted, script-writer: draft script + caption + hashtags in our voice.
 4) ALWAYS finish by posting a confirmation to Slack (or a comment on the new Progress Log row):
@@ -91,43 +92,33 @@ Then run the per-note flow (ROUTINES.md Routine 1):
 
 ---
 
-## Routine 2 — Saturday: Audit + Shoot + draft next week (scheduled)
+## Routine 2 — Friday: Instagram audit → finalize the about-to-shoot week (scheduled)
 
-**Trigger:** every **Saturday** morning (IST), before Parth films.
+**Trigger:** every **Friday** morning (IST), the day before Parth films.
 
 **Orchestrator steps:**
-1. Call **social-media-manager** (Job B):
+1. Call **social-media-manager** (Job B1):
    - Pull Windsor (`WINDSOR_CONNECTOR`) → audit the **currently-posting** week (fold in any Instagram
      Insights Parth supplied; flag the metrics the public connector can't see).
-   - Apply any audit-driven last-minute changes so the **about-to-film week** has 7 finalized slots.
+   - Apply any audit-driven changes so the **about-to-shoot week** (filmed tomorrow) has 7 finalized slots.
    - Write findings to `WEEKLY_AUDIT_PAGE`.
-2. Call **script-writer** for any film-week reels still lacking a script.
-3. Orchestrator posts to `SLACK_CHANNEL`: **audit summary + the go-to-shoot list** (7 reels:
-   scripts/captions/hashtags). → **Parth films.**
-4. **After filming** (Parth marks the reels `Filmed` — the freeze), call **social-media-manager**
-   again to **draft the FOLLOWING week** into `CONTENT_CALENDAR_DB` as `Proposed` (mix 2/2/2/1);
-   **script-writer** drafts any new concepts. This is what Parth reviews on Monday.
+2. Call **script-writer** for any reels in that week still lacking a script.
+3. Orchestrator posts to `SLACK_CHANNEL`: **audit summary + the finalized go-to-shoot list** (7 reels:
+   scripts/captions/hashtags) for tomorrow's shoot.
 
-> Step 4 can be a tail of this routine or a separate Saturday-evening run, as long as the next week
-> is `Proposed` in Notion before Monday morning.
-
-### Ready-to-paste prompt for the Saturday (Schedule) routine
+### Ready-to-paste prompt for the Friday (Schedule) routine
 ```
 You are the OneKey Instagram content orchestrator. Read CLAUDE.md and ROUTINES.md first; follow
-them exactly. Run the Saturday flow (ROUTINES.md Routine 2):
+them exactly. Run the Friday flow (ROUTINES.md Routine 2):
 
-1) social-media-manager (Job B): pull Windsor (connector instagram_public, account onekey_notes).
+1) social-media-manager (Job B1): pull Windsor (connector instagram_public, account onekey_notes).
    Audit the currently-posting week's performance (fold in any Instagram Insights provided; flag
    what the public connector can't see — reach/saves/profile visits/link taps). Apply any
-   audit-driven last-minute changes so the about-to-film week (the one filmed today) has all 7
-   slots finalized. Write findings to the Weekly Audit page under page
-   3832ece2-05ae-81b1-b705-fc8d5f2be1e3.
-2) script-writer: draft any film-week reels that still lack a script.
-3) Post to Slack: the audit summary + the go-to-shoot list (7 reels with scripts/captions/hashtags)
-   for today's filming.
-4) Then draft the FOLLOWING week's 7-reel slate (default mix 2/2/2/1) into the Content Calendar
-   database (child of page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3) as Status=Proposed; script-writer
-   drafts the new concepts. This is what Parth reviews on Monday.
+   audit-driven changes so the about-to-shoot week (the one filmed TOMORROW) has all 7 slots
+   finalized. Write findings to the Weekly Audit page under page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3.
+2) script-writer: draft any reels in that week that still lack a script.
+3) Post to Slack: the audit summary + the finalized go-to-shoot list (7 reels with
+   scripts/captions/hashtags) for tomorrow's shoot.
 
 Never set Status=Filmed (only Parth's shoot does that). Never auto-post to Instagram. Never touch
 the duplicate "OneKey Content Calendar" database (d7f4479a) — it is being archived.
@@ -135,21 +126,48 @@ the duplicate "OneKey Content Calendar" database (d7f4479a) — it is being arch
 
 ---
 
-## Routine 3 — Monday-morning review notification (scheduled)
+## Routine 3 — Saturday: draft next week's slate (scheduled)
 
-**Trigger:** every **Monday** morning (IST).
+**Trigger:** every **Saturday** (IST). Parth films the finalized week today; this routine drafts the
+*following* week so it's ready for Sunday's review.
 
 **Orchestrator steps:**
-1. Read `CONTENT_CALENDAR_DB` for the next week's `Proposed` slate (drafted Saturday).
+1. Call **social-media-manager** (Job B2): **draft the FOLLOWING week's 7-reel slate** into
+   `CONTENT_CALENDAR_DB` as `Proposed` (mix 2/2/2/1). Never touch the week Parth filmed today (frozen).
+2. Call **script-writer** to draft the new concepts.
+
+### Ready-to-paste prompt for the Saturday (Schedule) routine
+```
+You are the OneKey Instagram content orchestrator. Read CLAUDE.md and ROUTINES.md first; follow
+them exactly. Run the Saturday flow (ROUTINES.md Routine 3):
+
+1) social-media-manager (Job B2): draft the FOLLOWING week's 7-reel slate (default mix 2/2/2/1) into
+   the Content Calendar database (child of page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3) as
+   Status=Proposed. This is what Parth reviews tomorrow (Sunday). Do not touch the week filmed today.
+2) script-writer: draft the new concepts (script + caption + hashtags) in our voice.
+3) Post a short Slack confirmation that next week's draft is in Notion.
+
+Never set Status=Filmed (only Parth's shoot does that). Never auto-post to Instagram. Never touch
+the duplicate "OneKey Content Calendar" database (d7f4479a) — it is being archived.
+```
+
+---
+
+## Routine 4 — Sunday: review notification (scheduled)
+
+**Trigger:** every **Sunday** morning (IST).
+
+**Orchestrator steps:**
+1. Read `CONTENT_CALENDAR_DB` for next week's `Proposed` slate (drafted Saturday).
 2. Post to `SLACK_CHANNEL`: **"Next week's content calendar is ready to review in Notion"** + a link
    + a one-screen summary (the 7 Day/Pillar/Concept rows).
 3. **End turn.** When Parth replies with changes, apply them to `CONTENT_CALENDAR_DB` as `Proposed`
    (reuse Routine 1's calendar-logic step for any reprioritization).
 
-### Ready-to-paste prompt for the Monday (Schedule) routine
+### Ready-to-paste prompt for the Sunday (Schedule) routine
 ```
 You are the OneKey Instagram content orchestrator. Read CLAUDE.md and ROUTINES.md first. Run the
-Monday review notification (ROUTINES.md Routine 3):
+Sunday review notification (ROUTINES.md Routine 4):
 
 1) Read the Content Calendar database (child of page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3) for next
    week's Proposed slate (drafted at Saturday's run).
@@ -161,23 +179,26 @@ Monday review notification (ROUTINES.md Routine 3):
 
 ---
 
-## How the pieces line up (one cycle)
+## How the pieces line up (one cycle, with Parth's June example)
 
 ```
-Sat  ── audit currently-posting week → finalize film-week → FILM 7 (freeze) → draft next week (Proposed)
-Mon  ── posting begins (reel 1/7)  +  NOTIFY: next week ready to review in Notion
-Mon–Fri ── post daily; OneKey-webhook notes may revise next week (Proposed)   [Friday = cutoff]
-Sat  ── audit (now with this week's live data) → finalize next week → FILM → draft the week after
-… repeats
+Fri (Jun 26) ── audit the posting week (Windsor) → finalize the about-to-shoot week
+Sat (Jun 27) ── FILM the finalized week (freeze) → draft the FOLLOWING week (Jul 6–12) as Proposed
+Sun (Jun 28) ── NOTIFY: next week's calendar ready to review in Notion → apply Parth's changes
+Mon–Sun (Jun 29–Jul 5) ── post the filmed week, 1 reel/day
+any day ── OneKey-webhook note → update the upcoming week only if it can replace a reel  [cutoff = Fri audit]
+… repeats every week
 ```
 
-**Bootstrap:** the calendar currently holds **one week** (the batch filmed this Saturday). The first
-Saturday run begins the rolling cycle by drafting the following week.
+**Bootstrap:** the calendar holds **one week** (Jun 22–28, filmed Sat Jun 20). On Sat Jun 20 the
+Saturday routine drafts the Jun 29–Jul 5 week → reviewed Sun Jun 21 → finalized at the Fri Jun 26
+audit → filmed Sat Jun 27. The rolling cycle is then self-sustaining.
 
 ---
 
-## Out of scope until you choose to go live
+## Go-live checklist
 
-Creating these routines, attaching the webhook/schedules, and any live Notion/Slack/Windsor writes
-are intentionally **not** done in the scaffolding session. When ready, create Routines 1–3 with the
-triggers above and the shared config filled in.
+Create **four routines** with the triggers and paste-prompts above, point each at repo
+`parthsrivastava10/Social-Media-` @ `claude/exciting-hamilton-t53cuu`, and connect the tools each
+needs (Notion for all; Windsor + Slack for Friday; Slack for Saturday/Sunday/per-note). Put the
+**Webhook** routine's URL into OneKey. Archive the duplicate calendar `d7f4479a`.
