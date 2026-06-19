@@ -23,11 +23,28 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "PASTE_CLAUDE_PER_NOTE_ROUTINE_WEBHOOK_URL_HERE",
+        "url": "PASTE_ROUTINE_FIRE_URL_HERE_ENDING_IN_/fire",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer PASTE_ROUTINE_API_TRIGGER_TOKEN_HERE_sk-ant-oat01-xxx"
+            },
+            {
+              "name": "anthropic-beta",
+              "value": "experimental-cc-routine-2026-04-01"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ { \"note\": ($json.body && ($json.body.note || $json.body.text || $json.body.transcript || $json.body.content || $json.body.message)) || JSON.stringify($json.body || $json), \"source\": \"onekey-via-n8n\" } }}",
+        "jsonBody": "={{ { \"text\": ($json.body && $json.body.transcription && ($json.body.transcription.enhancedText || $json.body.transcription.text)) || ($json.body && ($json.body.note || $json.body.text || $json.body.transcript || $json.body.content || $json.body.message)) || JSON.stringify($json.body || $json) } }}",
         "options": {}
       },
       "id": "a1b2c3d4-0002-4a11-9bbb-222222222222",
