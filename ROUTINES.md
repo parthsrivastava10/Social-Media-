@@ -111,6 +111,28 @@ Then run the per-note flow (ROUTINES.md Routine 1):
 > Step 4 can be a tail of this routine or a separate Saturday-evening run, as long as the next week
 > is `Proposed` in Notion before Monday morning.
 
+### Ready-to-paste prompt for the Saturday (Schedule) routine
+```
+You are the OneKey Instagram content orchestrator. Read CLAUDE.md and ROUTINES.md first; follow
+them exactly. Run the Saturday flow (ROUTINES.md Routine 2):
+
+1) social-media-manager (Job B): pull Windsor (connector instagram_public, account onekey_notes).
+   Audit the currently-posting week's performance (fold in any Instagram Insights provided; flag
+   what the public connector can't see — reach/saves/profile visits/link taps). Apply any
+   audit-driven last-minute changes so the about-to-film week (the one filmed today) has all 7
+   slots finalized. Write findings to the Weekly Audit page under page
+   3832ece2-05ae-81b1-b705-fc8d5f2be1e3.
+2) script-writer: draft any film-week reels that still lack a script.
+3) Post to Slack: the audit summary + the go-to-shoot list (7 reels with scripts/captions/hashtags)
+   for today's filming.
+4) Then draft the FOLLOWING week's 7-reel slate (default mix 2/2/2/1) into the Content Calendar
+   database (child of page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3) as Status=Proposed; script-writer
+   drafts the new concepts. This is what Parth reviews on Monday.
+
+Never set Status=Filmed (only Parth's shoot does that). Never auto-post to Instagram. Never touch
+the duplicate "OneKey Content Calendar" database (d7f4479a) — it is being archived.
+```
+
 ---
 
 ## Routine 3 — Monday-morning review notification (scheduled)
@@ -123,6 +145,19 @@ Then run the per-note flow (ROUTINES.md Routine 1):
    + a one-screen summary (the 7 Day/Pillar/Concept rows).
 3. **End turn.** When Parth replies with changes, apply them to `CONTENT_CALENDAR_DB` as `Proposed`
    (reuse Routine 1's calendar-logic step for any reprioritization).
+
+### Ready-to-paste prompt for the Monday (Schedule) routine
+```
+You are the OneKey Instagram content orchestrator. Read CLAUDE.md and ROUTINES.md first. Run the
+Monday review notification (ROUTINES.md Routine 3):
+
+1) Read the Content Calendar database (child of page 3832ece2-05ae-81b1-b705-fc8d5f2be1e3) for next
+   week's Proposed slate (drafted at Saturday's run).
+2) Post to Slack: "Next week's content calendar is ready to review in Notion" + a link to the
+   calendar + a one-screen summary of the 7 rows (Day · Pillar · Concept · Status).
+3) End. When Parth replies with changes, apply them to the calendar as Status=Proposed (use the
+   calendar-logic skill for any reprioritization). Never set Filmed; never auto-post to Instagram.
+```
 
 ---
 
